@@ -72,10 +72,13 @@ export class SpinelessStack extends cdk.Stack {
       websiteIndexDocument: "index.html",
     });
 
+    websiteS3.grantPublicAccess();
+
     const websiteOrigin = new cloudfrontOrigins.S3Origin(websiteS3);
 
     const websiteBehaviour: cloudfront.BehaviorOptions = {
       origin: websiteOrigin,
+      allowedMethods: AllowedMethods.ALLOW_ALL,
       viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
     };
 
@@ -99,15 +102,13 @@ export class SpinelessStack extends cdk.Stack {
         additionalBehaviors: {
           "/": websiteBehaviour,
           "/index.html": websiteBehaviour,
-          "/static": websiteBehaviour,
-          "/static/*": websiteBehaviour,
+          "/assets": websiteBehaviour,
+          "/assets/*": websiteBehaviour,
           "/editor": websiteBehaviour,
           "/editor/*": websiteBehaviour,
         },
       }
     );
-
-    // websiteS3.grantRead(cfDistribution)
 
     new s3deploy.BucketDeployment(this, "DeployWithInvalidation", {
       sources: [
