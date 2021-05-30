@@ -2,8 +2,10 @@
 
 # build spineless-server
 cd spineless-server
-yarn --production
+yarn --production=false
 yarn build
+rm -rf node_modules
+yarn --production=true
 cd ../
 
 # build spineless-website
