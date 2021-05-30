@@ -5,7 +5,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: pwd
-      - run: ls
+      - run: ls -l
+      - run: ls -l ci
       - run: which node
       - run: which yarn
       - run: ./ci/build-all.sh
