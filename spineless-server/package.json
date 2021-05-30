@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "build": "nest build",
-    "dev:server": "nest start"
+    "dev": "nest start"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.76",
