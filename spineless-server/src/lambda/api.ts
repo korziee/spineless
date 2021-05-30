@@ -5,6 +5,7 @@ import { NestFactory } from "@nestjs/core";
 import { ExpressAdapter } from "@nestjs/platform-express";
 import { AppModule } from "../AppModule";
 import express from "express";
+import helmet from "helmet";
 
 // NOTE: If you get ERR_CONTENT_DECODING_FAILED in your browser, this
 // is likely due to a compressed response (e.g. gzip) which has not
@@ -18,6 +19,7 @@ let cachedServer: Server;
 async function bootstrapServer(): Promise<Server> {
   if (!cachedServer) {
     const expressApp = express();
+    expressApp.use(helmet());
     const nestApp = await NestFactory.create(
       AppModule,
       new ExpressAdapter(expressApp)

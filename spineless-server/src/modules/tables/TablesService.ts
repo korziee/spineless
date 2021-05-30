@@ -105,7 +105,7 @@ export class TablesService {
           Item: {
             namespaced_table: {S: namespaced_table},
             id: {S: entity._id},
-            data: { S: JSON.stringify(entity) }
+            data: {S: JSON.stringify(entity)}
           }
         })
     );
@@ -123,13 +123,13 @@ export class TablesService {
         {
           TableName: DB_SPINELESS_DATA,
           Key: {
-            'namespaced_table': { S: namespacedTable },
-            'id': { S: entityId }
+            "namespaced_table": {S: namespacedTable},
+            "id": {S: entityId}
           }
         })
     );
 
-    return entity.Item ? JSON.parse(entity.Item.data.S) : null
+    return entity.Item ? JSON.parse(entity.Item.data.S) : null;
   }
 
   public async queryEntitiesInTable(
@@ -152,16 +152,37 @@ export class TablesService {
 
     const items = response.Items.map(x => JSON.parse(x.data.S));
 
-    // TODO: run this in parallel
-    // const total = await this.retrieveNumberOfEntitiesInTable(namespace, tableName);
-    return  {
-       items,
+    return {
+      items,
       _meta: {
         total: response.Count,
         returned: response.Count,
         skipped: 0
       }
     }
+  }
+
+  public async updateEntity(namespace: string, tableName: string, entityId: string, updatedEntity: any): Promise<void> {
+    // ensure table exists
+    this.ensureTableExistsInBackground(namespace, tableName);
+
+    // ensure the ID isn't being modified
+    updatedEntity._id = entityId;
+
+    const namespaced_table = `${namespace}/${tableName}`;
+
+    // store entity in spineless_data table
+    await this._dynamo.send(
+      new PutItemCommand(
+        {
+          TableName: DB_SPINELESS_DATA,
+          Item: {
+            namespaced_table: {S: namespaced_table},
+            id: {S: updatedEntity._id},
+            data: {S: JSON.stringify(updatedEntity)}
+          }
+        })
+    );
   }
 
   // aws dynamodb query --table-name spineless-stack-spinelesstablesC56DD956-OC73QQHRVP8B --key-condition-expression "namespace = :namespace" --expression-attribute-values '{ ":namespace": { "S": "asdf" } }' --select  "COUNT"

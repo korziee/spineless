@@ -1,4 +1,15 @@
-import {BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Post} from "@nestjs/common";
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  NotFoundException,
+  Param, Patch,
+  Post, Put
+} from "@nestjs/common";
 import {TablesService} from "./TablesService";
 
 @Controller({
@@ -30,8 +41,6 @@ export class TablesController {
     }
 
     await this._tablesService.ensureTableExists(namespace, tableName);
-
-    return;
   }
 
 
@@ -60,8 +69,44 @@ export class TablesController {
     @Param("tableName") tableName: string,
     @Param("entityId") entityId: string
   ) {
+    const entity = await this._tablesService.retrieveEntity(namespace, tableName, entityId);
+    if (entity === null) {
+      throw new NotFoundException();
+    }
 
-    return this._tablesService.retrieveEntity(namespace, tableName, entityId);
+    return entity;
+  }
+
+  @Put("/:tableName/:entityId")
+  public async updateEntityFromTable(
+    @Param("namespace") namespace: string,
+    @Param("tableName") tableName: string,
+    @Param("entityId") entityId: string,
+    @Body() updatedEntity: any
+  ) {
+    await this._tablesService.updateEntity(namespace, tableName, entityId, updatedEntity);
+
+    return updatedEntity;
+  }
+
+  @Patch("/:tableName/:entityId")
+  public async patchEntityFromTable(
+    @Param("namespace") namespace: string,
+    @Param("tableName") tableName: string,
+    @Param("entityId") entityId: string,
+    @Body() updatedEntityFields: any
+  ) {
+    // note: this is not atomic!!
+    // TODO: use optimistic locking to fake atomicity
+
+    const existingEntity = await this._tablesService.retrieveEntity(namespace, tableName, entityId);
+    const updatedEntity = {
+      ...existingEntity,
+      ...updatedEntityFields
+    };
+    await this._tablesService.updateEntity(namespace, tableName, entityId, updatedEntity);
+
+    return updatedEntity;
   }
 
   @Get("/:tableName")

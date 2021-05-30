@@ -25,6 +25,7 @@
     "@nestjs/platform-express": "^7.6.17",
     "aws-serverless-express": "^3.4.0",
     "dotenv": "^10.0.0",
+    "helmet": "^4.6.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.1.0"
   }
