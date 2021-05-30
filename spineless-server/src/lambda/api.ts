@@ -1,4 +1,3 @@
-import { Handler, Context } from "aws-lambda";
 import { Server } from "http";
 import { createServer, proxy } from "aws-serverless-express";
 import { eventContext } from "aws-serverless-express/middleware";
@@ -31,7 +30,7 @@ async function bootstrapServer(): Promise<Server> {
 }
 
 // Export the handler : the entry point of the Lambda function
-export const handler: Handler = async (event: any, context: Context) => {
+export const handler: any = async (event: any, context: any) => {
   cachedServer = await bootstrapServer();
   return proxy(cachedServer, event, context, "PROMISE").promise;
 };

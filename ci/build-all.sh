@@ -2,7 +2,7 @@
 
 # build spineless-server
 cd spineless-server
-yarn
+yarn --production
 yarn build
 cd ../
 
