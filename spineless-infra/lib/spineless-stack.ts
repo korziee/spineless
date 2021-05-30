@@ -1,15 +1,16 @@
 import * as apigateway from "@aws-cdk/aws-apigateway";
 import * as acm from "@aws-cdk/aws-certificatemanager";
 import * as cloudfront from "@aws-cdk/aws-cloudfront";
+import { AllowedMethods, ViewerProtocolPolicy } from "@aws-cdk/aws-cloudfront";
+import * as cloudfrontOrigins from "@aws-cdk/aws-cloudfront-origins";
+import * as dynamodb from "@aws-cdk/aws-dynamodb";
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as route53 from "@aws-cdk/aws-route53";
-import * as cdk from "@aws-cdk/core";
-import * as s3 from "@aws-cdk/aws-s3";
-import * as dynamodb from "@aws-cdk/aws-dynamodb";
 import * as route53Targets from "@aws-cdk/aws-route53-targets";
-
+import * as s3 from "@aws-cdk/aws-s3";
+import * as s3deploy from "@aws-cdk/aws-s3-deployment";
+import * as cdk from "@aws-cdk/core";
 import * as path from "path";
-import { ViewerProtocolPolicy } from "@aws-cdk/aws-cloudfront";
 
 const SPINELESS_CERT_ARN =
   "arn:aws:acm:us-east-1:462901810174:certificate/79ee09a8-a072-46b2-800b-67d30197fcb9";
@@ -67,73 +68,78 @@ export class SpinelessStack extends cdk.Stack {
       handler: backendLambda,
     });
 
-    const websiteS3 = new s3.Bucket(this, "spineless-website");
+    const websiteS3 = new s3.Bucket(this, "spineless-website", {
+      websiteIndexDocument: "index.html",
+    });
 
-    const cloudfrontDistribution = new cloudfront.CloudFrontWebDistribution(
+    const websiteOrigin = new cloudfrontOrigins.S3Origin(websiteS3);
+
+    const cfDistribution = new cloudfront.Distribution(
       this,
-      "MyDistribution",
+      "spineless-cloudfront-distribution",
       {
-        comment: "CDN for Web App",
-        viewerCertificate: cloudfront.ViewerCertificate.fromAcmCertificate(
-          certificate,
-          {
-            aliases: ["spineless.xyz"],
-          }
-        ),
-        viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
-        originConfigs: [
-          {
-            // make sure your backend origin is first in the originConfigs list so it takes precedence over the S3 origin
-            customOriginSource: {
-              domainName: `${api.restApiId}.execute-api.${this.region}.${this.urlSuffix}`,
-            },
-            originPath: `/${api.deploymentStage.stageName}`,
-            behaviors: [
-              {
-                isDefaultBehavior: true,
-                cachedMethods: undefined,
-                allowedMethods: cloudfront.CloudFrontAllowedMethods.ALL,
-              },
-            ],
+        domainNames: ["spineless.xyz"],
+        certificate: certificate,
+        defaultBehavior: {
+          allowedMethods: AllowedMethods.ALLOW_ALL,
+          viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
+          cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
+          origin: new cloudfrontOrigins.HttpOrigin(
+            `${api.restApiId}.execute-api.${this.region}.${this.urlSuffix}`,
+            {
+              originPath: `/${api.deploymentStage.stageName}`,
+            }
+          ),
+        },
+        additionalBehaviors: {
+          "/": {
+            origin: websiteOrigin,
+            viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
           },
-          {
-            s3OriginSource: {
-              s3BucketSource: websiteS3,
-            },
-            behaviors: [
-              {
-                pathPattern: "/",
-              },
-              {
-                pathPattern: "/index.html",
-              },
-              {
-                pathPattern: "/static",
-              },
-              {
-                pathPattern: "/static/*",
-              },
-              {
-                pathPattern: "/editor",
-              },
-              {
-                pathPattern: "/editor/*",
-              },
-            ],
+          "/index.html": {
+            origin: websiteOrigin,
+            viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
           },
-        ],
+          "/static": {
+            origin: websiteOrigin,
+            viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
+          },
+          "/static/*": {
+            origin: websiteOrigin,
+            viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
+          },
+          "/editor": {
+            origin: websiteOrigin,
+            viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
+          },
+          "/editor/*": {
+            origin: websiteOrigin,
+            viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
+          },
+        },
       }
     );
+
+    new s3deploy.BucketDeployment(this, "DeployWithInvalidation", {
+      sources: [
+        s3deploy.Source.asset(
+          path.join(__dirname, "../../spineless-website/_site")
+        ),
+      ],
+      destinationBucket: websiteS3,
+      distribution: cfDistribution,
+      distributionPaths: ["/*"],
+    });
 
     new route53.ARecord(this, "AliasRecord", {
       zone: hostedZone,
       target: route53.RecordTarget.fromAlias(
-        new route53Targets.CloudFrontTarget(cloudfrontDistribution)
+        new route53Targets.CloudFrontTarget(cfDistribution)
       ),
     });
 
     new cdk.CfnOutput(this, "myOut", {
-      value: cloudfrontDistribution.distributionDomainName,
+      value: cfDistribution.distributionDomainName,
     });
   }
 }

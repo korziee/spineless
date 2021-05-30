@@ -33,6 +33,7 @@
     "@aws-cdk/aws-route53": "^1.106.1",
     "@aws-cdk/aws-route53-targets": "^1.106.1",
     "@aws-cdk/aws-s3": "^1.106.1",
+    "@aws-cdk/aws-s3-deployment": "^1.106.1",
     "@aws-cdk/core": "1.96.0",
     "source-map-support": "^0.5.16"
   }
