@@ -11,6 +11,7 @@ jobs:
           ruby-version: '3.0'
       - run: ./ci/install-deps.sh
       - run: ./ci/build-all.sh
+      - run: cd spineless-infra
       - name: cdk deploy
         uses: youyo/aws-cdk-github-actions@v2
         with:
