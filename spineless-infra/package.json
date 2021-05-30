@@ -34,7 +34,6 @@
     "@aws-cdk/aws-route53-targets": "^1.106.1",
     "@aws-cdk/aws-s3": "^1.106.1",
     "@aws-cdk/core": "1.96.0",
-    "@aws-solutions-constructs/aws-cloudfront-apigateway": "^1.105.0",
     "source-map-support": "^0.5.16"
   }
 }

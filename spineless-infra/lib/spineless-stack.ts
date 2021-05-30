@@ -47,24 +47,12 @@ export class SpinelessStack extends cdk.Stack {
       sortKey: { name: "table", type: dynamodb.AttributeType.STRING },
     });
 
-    const nodeModulesLayer = new lambda.LayerVersion(
-      this,
-      "spineless-modules",
-      {
-        code: lambda.Code.fromAsset(
-          path.join(__dirname, "../../spineless-server/node_modules")
-        ),
-        compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
-      }
-    );
-
     const backendLambda = new lambda.Function(this, "spineless-lambda", {
       runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromAsset(
-        path.join(__dirname, "../../spineless-server/dist")
+        path.join(__dirname, "../../spineless-server")
       ),
-      handler: "api.handler",
-      layers: [nodeModulesLayer],
+      handler: "dist/lambda/api.handler",
       environment: {
         DB_SPINELESS_TABLES: metaTable.tableArn,
         DB_SPINELESS_DATA: dataTable.tableArn,
@@ -112,7 +100,13 @@ export class SpinelessStack extends cdk.Stack {
                 pathPattern: "/",
               },
               {
+                pathPattern: "/static",
+              },
+              {
                 pathPattern: "/static/*",
+              },
+              {
+                pathPattern: "/editor",
               },
               {
                 pathPattern: "/editor/*",
