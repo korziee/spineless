@@ -9,6 +9,7 @@ import * as dynamodb from "@aws-cdk/aws-dynamodb";
 import * as route53Targets from "@aws-cdk/aws-route53-targets";
 
 import * as path from "path";
+import { ViewerProtocolPolicy } from "@aws-cdk/aws-cloudfront";
 
 const SPINELESS_CERT_ARN =
   "arn:aws:acm:us-east-1:462901810174:certificate/79ee09a8-a072-46b2-800b-67d30197fcb9";
@@ -54,10 +55,13 @@ export class SpinelessStack extends cdk.Stack {
       ),
       handler: "dist/lambda/api.handler",
       environment: {
-        DB_SPINELESS_TABLES: metaTable.tableArn,
-        DB_SPINELESS_DATA: dataTable.tableArn,
+        DB_SPINELESS_TABLES: metaTable.tableName,
+        DB_SPINELESS_DATA: dataTable.tableName,
       },
     });
+
+    metaTable.grantReadWriteData(backendLambda);
+    dataTable.grantReadWriteData(backendLambda);
 
     const api = new apigateway.LambdaRestApi(this, "spineless-api", {
       handler: backendLambda,
@@ -76,6 +80,7 @@ export class SpinelessStack extends cdk.Stack {
             aliases: ["spineless.xyz"],
           }
         ),
+        viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
         originConfigs: [
           {
             // make sure your backend origin is first in the originConfigs list so it takes precedence over the S3 origin
@@ -98,6 +103,9 @@ export class SpinelessStack extends cdk.Stack {
             behaviors: [
               {
                 pathPattern: "/",
+              },
+              {
+                pathPattern: "/index.html",
               },
               {
                 pathPattern: "/static",
