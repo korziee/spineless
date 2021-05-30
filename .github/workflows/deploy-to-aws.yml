@@ -11,7 +11,6 @@ jobs:
           ruby-version: '3.0'
       - run: ./ci/install-deps.sh
       - run: ./ci/build-all.sh
-      - run: cd spineless-infra
       - name: cdk deploy
         uses: youyo/aws-cdk-github-actions@v2
         with:
@@ -19,6 +18,7 @@ jobs:
           cdk_stack: 'spineless-stack'
           cdk_args: '--require-approval never'
           actions_comment: false
+          working_dir: 'spineless-infra'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
