@@ -13,3 +13,8 @@ cd spineless-website
 bundle install
 bundle exec jekyll build
 cd ../
+
+# build spineless-infra
+cd spineless-infra
+yarn
+cd ../
