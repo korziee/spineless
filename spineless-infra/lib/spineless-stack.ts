@@ -74,6 +74,11 @@ export class SpinelessStack extends cdk.Stack {
 
     const websiteOrigin = new cloudfrontOrigins.S3Origin(websiteS3);
 
+    const websiteBehaviour: cloudfront.BehaviorOptions = {
+      origin: websiteOrigin,
+      viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
+    };
+
     const cfDistribution = new cloudfront.Distribution(
       this,
       "spineless-cloudfront-distribution",
@@ -92,33 +97,17 @@ export class SpinelessStack extends cdk.Stack {
           ),
         },
         additionalBehaviors: {
-          "/": {
-            origin: websiteOrigin,
-            viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
-          },
-          "/index.html": {
-            origin: websiteOrigin,
-            viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
-          },
-          "/static": {
-            origin: websiteOrigin,
-            viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
-          },
-          "/static/*": {
-            origin: websiteOrigin,
-            viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
-          },
-          "/editor": {
-            origin: websiteOrigin,
-            viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
-          },
-          "/editor/*": {
-            origin: websiteOrigin,
-            viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
-          },
+          "/": websiteBehaviour,
+          "/index.html": websiteBehaviour,
+          "/static": websiteBehaviour,
+          "/static/*": websiteBehaviour,
+          "/editor": websiteBehaviour,
+          "/editor/*": websiteBehaviour,
         },
       }
     );
+
+    // websiteS3.grantRead(cfDistribution)
 
     new s3deploy.BucketDeployment(this, "DeployWithInvalidation", {
       sources: [
