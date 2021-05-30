@@ -4,4 +4,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - run: pwd
+      - run: ls
+      - run: which node
+      - run: which yarn
       - run: ./ci/build-all.sh
