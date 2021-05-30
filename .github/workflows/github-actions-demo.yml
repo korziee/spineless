@@ -1,4 +1,4 @@
-name: GitHub Actions Demo
+name: Deploy to AWS
 on: [workflow_dispatch]
 jobs:
   deploy:
@@ -6,7 +6,7 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
-      - uses: actions/setup-ruby@v1
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.0'
       - run: ./ci/install-deps.sh
