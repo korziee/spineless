@@ -6,9 +6,8 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
-      - run: pwd
-      - run: ls -l
-      - run: ls -l ci
-      - run: which node
-      - run: which yarn
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+      - run: ./ci/install-deps.sh
       - run: ./ci/build-all.sh
