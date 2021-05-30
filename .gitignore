@@ -6,6 +6,7 @@ results
 .idea/
 .vscode/
 .eslintcache
+_site/
 
 .DS_Store
 .env
