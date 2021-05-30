@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "build": "nest build",
-    "dev:server": "nest start -e \"node -r dotenv/config\""
+    "dev:server": "nest start"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.76",

@@ -6,7 +6,8 @@ import { AppModule } from "./AppModule";
 async function bootstrapApiServer() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
-  await app.listen(process.env.PORT);
+  console.log("Starting server on port 3000");
+  await app.listen(3000);
 }
 
 bootstrapApiServer().catch(console.error);
