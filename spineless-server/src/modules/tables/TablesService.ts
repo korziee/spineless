@@ -1,5 +1,11 @@
 import {Injectable} from "@nestjs/common";
-import {DynamoDBClient, GetItemCommand, PutItemCommand, QueryCommand} from "@aws-sdk/client-dynamodb";
+import {
+  DeleteItemCommand,
+  DynamoDBClient,
+  GetItemCommand,
+  PutItemCommand,
+  QueryCommand
+} from "@aws-sdk/client-dynamodb";
 
 import {INamespaceMeta} from "../../types/INamespaceMeta";
 import {createGuid} from "../../util/guid";
@@ -182,6 +188,22 @@ export class TablesService {
             data: {S: JSON.stringify(updatedEntity)}
           }
         })
+    );
+  }
+
+  public async deleteEntity(namespace: string, tableName: string, entityId: string): Promise<void> {
+    const namespacedTable = `${namespace}/${tableName}`;
+
+    await this._dynamo.send(
+      new DeleteItemCommand(
+        {
+          TableName: DB_SPINELESS_DATA,
+          Key: {
+            "namespaced_table": {S: namespacedTable},
+            "id": {S: entityId}
+          }
+        }
+      )
     );
   }
 

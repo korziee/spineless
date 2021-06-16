@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Body,
-  Controller,
+  Controller, Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -117,9 +117,15 @@ export class TablesController {
     return this._tablesService.queryEntitiesInTable(namespace, tableName);
   }
 
-  // TODO: DELETE /:tableName
-  // TODO: PUT /:tableName/:entityId
-  // TODO: PATCH /:tableName/:entityId
-  // TODO: DELETE /:tableName/:entityId
+  @Delete("/:tableName/:entityId")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async deleteEntityFromTable(
+    @Param("namespace") namespace: string,
+    @Param("tableName") tableName: string,
+    @Param("entityId") entityId: string
+  ) {
+    await this._tablesService.deleteEntity(namespace, tableName, entityId);
+  }
 
+  // TODO: DELETE /:tableName
 }
