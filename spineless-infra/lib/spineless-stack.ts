@@ -66,6 +66,10 @@ export class SpinelessStack extends cdk.Stack {
 
     const api = new apigateway.LambdaRestApi(this, "spineless-api", {
       handler: backendLambda,
+      defaultCorsPreflightOptions: {
+        allowOrigins: apigateway.Cors.ALL_ORIGINS,
+        allowMethods: apigateway.Cors.ALL_METHODS // this is also the default
+      }
     });
 
     const websiteS3 = new s3.Bucket(this, "spineless-website", {
