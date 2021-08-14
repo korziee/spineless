@@ -6,58 +6,68 @@ subtitle: Easy REST API for any front end application
 
 <div class="main-explain-area jumbotron">
   <form id="namespace-form">
-    <input type="text" id="tbx-namespace" placeholder="Namespace"/>
-    <button type="submit" class="btn btn-success btn-lg get-started-btn" id="btn-load-browser">Load browser</button>
+    <input type="text" id="tbx-namespace" placeholder="Namespace" />
+    <button
+      type="submit"
+      class="btn btn-success btn-lg get-started-btn"
+      id="btn-load-browser"
+    >
+      Load browser
+    </button>
   </form>
 </div>
 
 <!--How to use-->
 
 <style type="text/css">
-    .main-explain-area {
-        display: flex;
-        /*flex-direction: column;*/
-        align-items: flex-end;
-    }
+  .main-explain-area {
+    display: flex;
+    /*flex-direction: column;*/
+    align-items: flex-end;
+  }
 
-    #namespace-form {
-        display: flex;
-        flex: 1;
-    }
+  #namespace-form {
+    display: flex;
+    flex: 1;
+  }
 
-    #tbx-namespace {
-        width: 100%;
-        padding: 10px;
-        font-size: 18px;
-        outline: none !important;
-        border: none;
-        font-family: "Courier New", Monospaced;
-        /*margin-right: 15px;*/
+  #tbx-namespace {
+    width: 100%;
+    padding: 10px;
+    font-size: 18px;
+    outline: none !important;
+    border: none;
+    font-family: "Courier New", Monospaced;
+    /*margin-right: 15px;*/
 
-        flex: 3;
-        border-top-left-radius: 5px;
-        border-bottom-left-radius: 5px;
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-    }
+    flex: 3;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
 
-    .btn-success {
-        flex: 1;
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-        border-top-right-radius: 5px;
-        border-bottom-right-radius: 5px;
-    }
+  .btn-success {
+    flex: 1;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
 </style>
 <script>
   function goToNamespace(e) {
     e.preventDefault();
 
-    var namespace = document.getElementById('tbx-namespace').value;
-    location.href = "/editor/" + encodeURIComponent(namespace);
+    var namespace = document.getElementById("tbx-namespace").value;
+    location.href = "/editor?namespace=" + encodeURIComponent(namespace);
   }
 
   // document.getElementById('tbx-namespace').addEventListener('click', goToNamespace);
-  document.getElementById('btn-load-browser').addEventListener('click', goToNamespace);
-  document.getElementById('namespace-form').addEventListener('submit', goToNamespace);
+  document
+    .getElementById("btn-load-browser")
+    .addEventListener("click", goToNamespace);
+  document
+    .getElementById("namespace-form")
+    .addEventListener("submit", goToNamespace);
 </script>
