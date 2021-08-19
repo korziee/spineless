@@ -110,6 +110,8 @@ export class SpinelessStack extends cdk.Stack {
           "/assets/*": websiteBehaviour,
           "/editor": websiteBehaviour,
           "/editor/*": websiteBehaviour,
+          "/docs": websiteBehaviour,
+          "/docs/": websiteBehaviour,
         },
       }
     );
