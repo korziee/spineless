@@ -1,7 +1,7 @@
 #!/bin/sh
 
-cd editor
+cd ../spineless-editor
 yarn build-and-copy
 
-cd ../
+cd ../spineless-website
 bundle exec jekyll serve
