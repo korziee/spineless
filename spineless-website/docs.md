@@ -1,7 +1,7 @@
 ---
 layout: page
-title: About me
-subtitle: Why you'd want to go on a date with me
+title: Spineless docs
+subtitle: How and when to use spineless.xyz
 ---
 
 My name is Inigo Montoya. I have the following qualities:
