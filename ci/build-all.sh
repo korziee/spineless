@@ -9,7 +9,7 @@ yarn --production=true
 cd ../
 
 # build spineless-editor
-cd ../spineless-editor
+cd spineless-editor
 yarn install
 yarn build-and-copy
 cd ../
